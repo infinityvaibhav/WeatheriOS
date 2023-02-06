@@ -36,14 +36,7 @@ class WeatherViewController: UIViewController {
         cityPickerView.delegate = self
         cityTextField.inputView = cityPickerView
         
-        viewModel.fetchWeather(city: "Mumbai") { result in
-            switch result {
-            case .success:
-                self.setUpUI()
-            case .failure(let error):
-                print("Error " + error.localizedDescription)
-            }
-        }
+        fetchWeather(city: "Mumbai")
         
     }
     
@@ -63,14 +56,17 @@ class WeatherViewController: UIViewController {
         weatherWednesday?.text = viewModel.weatherWednesday
         weatherThursday?.text = viewModel.weatherThursday
         weatherFriday?.text = viewModel.weatherFriday
-        
-        
-        
     }
     
-    func textFieldShouldBeginEditing(textField: UITextField) -> Bool {
-        cityPickerView.isHidden = false
-        return false
+    private func fetchWeather(city: String) {
+        viewModel.fetchWeather(city: city) { result in
+            switch result {
+            case .success:
+                self.setUpUI()
+            case .failure(let error):
+                print("Error " + error.localizedDescription)
+            }
+        }
     }
 }
 
@@ -89,18 +85,10 @@ extension WeatherViewController: UIPickerViewDelegate, UIPickerViewDataSource {
         return cities[row]
     }
 
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)
-    {
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         cityTextField.text = cities[row]
         cityTextField.resignFirstResponder()
-        viewModel.fetchWeather(city: cities[row]) { result in
-            switch result {
-            case .success:
-                self.setUpUI()
-            case .failure(let error):
-                print("Error " + error.localizedDescription)
-            }
-        }
+        fetchWeather(city: cities[row])
     }
     
 }
